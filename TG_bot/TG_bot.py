@@ -26,16 +26,22 @@ What would you like to do?''').format(me.first_name)
 
 
 attemps=0
-password=370920
+adminlst=list()
+password='370920'
 @bot.message_handler(commands=['admin'])# блок для админа
-def subscribe_chat(message):  
-    bot.reply_to(message, "Enter team secret phrase:")
-    global attemps
-    attemps+=1
+def subscribe_chat(message):
+    if message.chat.id in adminlst:
+        bot.send_message(message.chat.id,'Привіт шановний адміне')  
+    else:
+        bot.reply_to(message, "Enter team secret phrase:")
+        global attemps
+        attemps+=1
 
 @bot.message_handler(func=lambda message: attemps==1)
 def team_user_login(message):
+    global adminlst
     if message.text == password:
+        adminlst.append(message.chat.id)
         bot.reply_to(message, "accepted")
     else:
         bot.reply_to(message, "Wrong secrete phrase, try again")
