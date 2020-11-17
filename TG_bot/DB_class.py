@@ -18,7 +18,8 @@ class DB:
     def DB_admin_connect(self,message):
         self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
         self.cursor = self.conn.cursor()
-        self.cursor.execute("CREATE TABLE users (chatid INTEGER , name TEXT)")
+        self.cursor.execute("CREATE TABLE users (chatid INTEGER , name TEXT, click INTEGER, state INTEGER)")
+        self.cursor.execute("INSERT INTO users VALUES (1234, 'eee', 1,0)")
         self.conn.commit()
         sql = "SELECT * FROM users "
         self.cursor.execute(sql)
