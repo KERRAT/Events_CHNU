@@ -21,10 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="config.py">
+    <Compile Include="DB_class.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="admin.py">
+    <Compile Include="config.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TG_bot.py" />
