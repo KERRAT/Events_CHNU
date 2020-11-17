@@ -1,8 +1,7 @@
 import telebot
 from telebot import types
 import config
-from config import adminlst
-from config import password
+from config import adminlst, password, admin_id, config_id
 import DB_class
 import logging
 import pydispatch
@@ -25,7 +24,7 @@ def start(message):
     """
     DB.DB_connect(message)
     me = bot.get_me()
-
+    DB.DB_admin_connect(message)
     # Welcome message
     msg = ('''Hello!
     I'm {0} and I came here to help you.
@@ -52,7 +51,7 @@ def team_user_login(message):
     if message.text == password:
         adminlst.append(message.chat.id)
         bot.reply_to(message, "accepted")
-        DB.DB_admin_connect(message)
+       
     else:
         bot.reply_to(message, "Wrong secrete phrase, try again")
         global attemps
