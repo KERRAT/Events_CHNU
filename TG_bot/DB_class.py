@@ -21,8 +21,12 @@ class DB:
         self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
         self.cursor = self.conn.cursor()
         self.cursor.execute("CREATE TABLE users (chatid INTEGER , name TEXT, click INTEGER, state INTEGER)")
-        self.get_data()
-        self.cursor.execute("INSERT INTO users VALUES (1234, 'eee', 1,0)")
+        data1 = self.get_data()
+        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[0])
+        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[1])
+        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[2])
+        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[3])
+        self.cursor.execute("INSERT INTO users VALUES (3,43454,34254,2345)")
         self.save_data()
         self.conn.commit()
         sql = "SELECT * FROM users "
@@ -49,8 +53,9 @@ class DB:
             sql = "SELECT * FROM users where chatid={}".format(message.chat.id)
             self.cursor.execute(sql)
             data = self.cursor.fetchone()  # or use fetchone()
+
     def save_data(self):
-        sql = "SELECT * FROM users "
+        sql = "SELECT * FROM users"
         self.cursor.execute(sql)
         data = self.cursor.fetchall()  # or use fetchone()
 
@@ -61,20 +66,21 @@ class DB:
             self.bot.edit_message_media(media = types.InputMediaDocument(io.StringIO('{}'.format(str_data))), chat_id= admin_id, message_id= config_id)
         except Exception as ex:
             print(ex)
-'''
+
     def get_data(self):
     # Пересылаем сообщение в данными от админа к админу
         forward_data = self.bot.forward_message(admin_id, admin_id, config_id)
 
     # Получаем путь к файлу, который переслали
         file_data = self.bot.get_file(forward_data.document.file_id)
-
+        print("123452322wesdvwefehg")
+        
     # Получаем файл по url
-        file_url_data = self.bot.get_file_url(file_data.file_path)
-
+        file_url_data = self.bot.download_file(file_data.file_path)
+        print("123452322wesdvwefehg")
+        '''
     # Считываем данные с файла
         json_file= urlopen(file_url_data).read()
-
+        '''
     # Переводим данные из json в словарь и возвращаем
-        return json.loads(json_file)
-    '''
+        return json.loads(file_url_data)
