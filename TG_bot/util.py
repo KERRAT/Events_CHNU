@@ -1,10 +1,24 @@
 import telebot
 from telebot import types
 import DB_class
-from telegram.ext import Updater
+from DB_class import DB as db
 from telegram.ext import CommandHandler, CallbackContext, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import Bot
+import telegram
+import config
+from config import admin_id, config_id
+import logging
+import pydispatch
+from pydispatch import Dispatcher
+import sqlite3
+import json
+import io
+import pkgutil
+import asyncio
+import threading
+
+bot = telebot.TeleBot(config.TOKEN)
 
 def generate_keyboard (*answer):
     keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
@@ -16,7 +30,27 @@ def generate_keyboard (*answer):
 def generate_inline_keyboard (width, name, *answer):
     inline_keyboard = types.InlineKeyboardMarkup(row_width= width)
     i=0
-    for item in answer:
-        InlineButtonMainMenu = types.InlineKeyboardButton(text = item, callback_data = "{}_{}".format(name, i))
-        inline_keyboard.add(InlineButtonMainMenu)
+    for text in answer:
+         InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(name, i))
+         inline_keyboard.add(InlineButtonMainMenu)
     return inline_keyboard
+
+def generate_inline_keyboard_1d_array (width, name, *answer):
+    inline_keyboard = types.InlineKeyboardMarkup(row_width= width)
+    i=0
+    for arr_1d in answer:
+        for text in arr_1d:
+            InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(name, i))
+            inline_keyboard.add(InlineButtonMainMenu)
+    return inline_keyboard
+
+def generate_inline_keyboard_2d_array (width, name, *answer):
+    inline_keyboard = types.InlineKeyboardMarkup(row_width= width)
+    i=0
+    for arr_2d in answer:
+        for arr_1d in arr_2d:
+            for text in arr_1d:
+                InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(name, i))
+                inline_keyboard.add(InlineButtonMainMenu)
+    return inline_keyboard
+

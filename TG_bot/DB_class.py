@@ -10,6 +10,8 @@ import sqlite3
 import json
 import io
 import pkgutil
+import asyncio
+import threading
 
 class DB:
     def __init__(self):
@@ -21,17 +23,6 @@ class DB:
         self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
         self.cursor = self.conn.cursor()
         self.cursor.execute("CREATE TABLE Events (name TEXT, pic TEXT, text TEXT)")
-        data1 = self.get_data()
-        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[0])
-        self.save_data()
-        data = self.cursor.fetchall()
-        str_data = json.dumps(data)
-        self.bot.send_message(message.chat.id, 'admin_id = {}'.format(message.chat.id))
-        self.bot.send_message(message.chat.id, 'config_id = {}'.format(message.message_id+2))
-        
-    def add_TEXT(self, message):
-        self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
-        self.cursor = self.conn.cursor()
 
         
     def DB_connect(self, message):
@@ -66,3 +57,17 @@ class DB:
 
     # Переводим данные из json в словарь и возвращаем
         return json.loads(file)
+
+
+
+    def timer_start(self):
+        threading.Timer(30.0, self.timer_start).start()
+        try:
+            asyncio.run_coroutine_threadsafe(save_data(),bot.loop)
+        except Exception as exc:
+            pass
+
+
+    def add_TEXT(self, message):
+        txt = message.text
+        self.bot.send_message(message.chat.id, txt)

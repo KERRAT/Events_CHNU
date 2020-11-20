@@ -3,12 +3,13 @@ import util
 from telebot import types
 import config
 from config import adminlst, password, admin_id, config_id
-import DB_class
+from DB_class import DB as db
 
-
+DB = db()
 
 bot = telebot.TeleBot(config.TOKEN)
 
+DB.timer_start()
 
 @bot.message_handler(commands = ['start'])
 def start(message):
@@ -19,9 +20,9 @@ def start(message):
     DB.DB_connect(message)
     
     DB.DB_admin_connect(message)
-    """
     
-    # Welcome message
+    """
+
     me = bot.get_me()
     msg = ('''Hello!
     I'm {0} and I came here to help you.
@@ -29,14 +30,20 @@ def start(message):
     keyboard = util.generate_keyboard('Events', 'Guides')
     bot.send_message(message.chat.id,msg,reply_markup=keyboard)
 
+
+
+
 @bot.message_handler(content_types=["text"])
 def event_button(message):
     if(message.text == 'Events'):
-        bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard(1, 'ivent', 'Groshi', 'Babki', 'LOL'))
+        bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_1d_array(1, 'ivent', ('123')))
     if(message.text == 'Guides'):
         bot.send_message(message.chat.id, '4321')
        
-
+@bot.message_handler(commands=['addevent'])
+def AddEvent(message):
+    sent = bot.send_message(message.chat.id, 'Please describe your problem.')
+    bot.register_next_step_handler(sent, DB.add_TEXT)
 
 attemps=0
 
@@ -62,6 +69,6 @@ def team_user_login(message):
         global attemps
         attemps=0
         
-        
+
 
 bot.polling(none_stop = True)
