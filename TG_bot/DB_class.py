@@ -20,39 +20,25 @@ class DB:
     def DB_admin_connect(self,message):
         self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
         self.cursor = self.conn.cursor()
-        self.cursor.execute("CREATE TABLE users (chatid INTEGER , name TEXT, click INTEGER, state INTEGER)")
+        self.cursor.execute("CREATE TABLE Events (name TEXT, pic TEXT, text TEXT)")
         data1 = self.get_data()
         self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[0])
-        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[1])
-        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[2])
-        self.cursor.execute("INSERT INTO users VALUES (?,?,?,?)", data1[3])
-        self.cursor.execute("INSERT INTO users VALUES (3,43454,34254,2345)")
         self.save_data()
-        self.conn.commit()
-        sql = "SELECT * FROM users "
-        self.cursor.execute(sql)
         data = self.cursor.fetchall()
         str_data = json.dumps(data)
-        self.bot.send_document(message.chat.id, io.StringIO(str_data))
         self.bot.send_message(message.chat.id, 'admin_id = {}'.format(message.chat.id))
         self.bot.send_message(message.chat.id, 'config_id = {}'.format(message.message_id+2))
         
+    def add_TEXT(self, message):
+        self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
+        self.cursor = self.conn.cursor()
+
         
     def DB_connect(self, message):
         self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
         self.cursor = self.conn.cursor()
-        try:
-            sql = "SELECT * FROM users where chatid={}".format(message.chat.id)
-            cursor.execute(sql)
-            data = cursor.fetchone()  # or use fetchone()
-        except Exception:
-            data = self.cursor.fetchall()
-            self.cursor.execute("CREATE TABLE users (chatid INTEGER , name TEXT, click INTEGER, state INTEGER)")
-            self.cursor.executemany("INSERT INTO users VALUES (?,?,?,?)", data)
-            self.conn.commit()
-            sql = "SELECT * FROM users where chatid={}".format(message.chat.id)
-            self.cursor.execute(sql)
-            data = self.cursor.fetchone()  # or use fetchone()
+        self.data = self.get_data()
+
 
     def save_data(self):
         sql = "SELECT * FROM users"
@@ -73,14 +59,10 @@ class DB:
 
     # Получаем путь к файлу, который переслали
         file_data = self.bot.get_file(forward_data.document.file_id)
-        print("123452322wesdvwefehg")
+
         
     # Получаем файл по url
-        file_url_data = self.bot.download_file(file_data.file_path)
-        print("123452322wesdvwefehg")
-        '''
-    # Считываем данные с файла
-        json_file= urlopen(file_url_data).read()
-        '''
+        file = self.bot.download_file(file_data.file_path)
+
     # Переводим данные из json в словарь и возвращаем
-        return json.loads(file_url_data)
+        return json.loads(file)

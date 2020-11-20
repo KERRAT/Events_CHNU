@@ -1,19 +1,13 @@
 import telebot
+import util
 from telebot import types
 import config
 from config import adminlst, password, admin_id, config_id
 import DB_class
-import logging
-import pydispatch
-from pydispatch import Dispatcher
+
 
 
 bot = telebot.TeleBot(config.TOKEN)
-
-keyboard=telebot.types.ReplyKeyboardMarkup()
-keyboard.row('1','2','3','4','5','6')
-
-DB = DB_class.DB()
 
 
 @bot.message_handler(commands = ['start'])
@@ -21,15 +15,26 @@ def start(message):
     
     """
        Shows an welcome message and help info about the available commands.
-    """
+    
     DB.DB_connect(message)
-    me = bot.get_me()
+    
     DB.DB_admin_connect(message)
+    """
+    
     # Welcome message
+    me = bot.get_me()
     msg = ('''Hello!
     I'm {0} and I came here to help you.
     What would you like to do?''').format(me.first_name)
+    keyboard = util.generate_keyboard('Events', 'Guides')
     bot.send_message(message.chat.id,msg,reply_markup=keyboard)
+
+@bot.message_handler(content_types=["text"])
+def event_button(message):
+    if(message.text == 'Events'):
+        bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard(1, 'ivent', 'Groshi', 'Babki', 'LOL'))
+    if(message.text == 'Guides'):
+        bot.send_message(message.chat.id, '4321')
        
 
 
