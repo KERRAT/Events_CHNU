@@ -1,6 +1,6 @@
 import telebot
+import util
 from telebot import types
-import telegram
 import config
 from config import admin_id, config_id
 import logging
@@ -13,26 +13,28 @@ import pkgutil
 import asyncio
 import threading
 
+conn = sqlite3.connect(":memory:", check_same_thread = False)  # настройки in memory бд
+
+
 class DB:
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self.bot = telebot.TeleBot(config.TOKEN)
         self.dp = Dispatcher(self.bot)
-
-    def DB_admin_connect(self,message):
-        self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
-        self.cursor = self.conn.cursor()
+        self.cursor = conn.cursor()
         self.cursor.execute("CREATE TABLE Events (name TEXT, pic TEXT, text TEXT)")
+        self.data = self.get_data()
+        for row in self.data:
+            self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", row)
+
 
         
-    def DB_connect(self, message):
-        self.conn = sqlite3.connect(":memory:")  # настройки in memory бд
-        self.cursor = self.conn.cursor()
-        self.data = self.get_data()
+    def DB_connect(self):
+        print("1234")
 
 
     def save_data(self):
-        sql = "SELECT * FROM users"
+        sql = "SELECT * FROM Events"
         self.cursor.execute(sql)
         data = self.cursor.fetchall()  # or use fetchone()
 
@@ -50,7 +52,6 @@ class DB:
 
     # Получаем путь к файлу, который переслали
         file_data = self.bot.get_file(forward_data.document.file_id)
-
         
     # Получаем файл по url
         file = self.bot.download_file(file_data.file_path)
@@ -63,11 +64,30 @@ class DB:
     def timer_start(self):
         threading.Timer(30.0, self.timer_start).start()
         try:
-            asyncio.run_coroutine_threadsafe(save_data(),bot.loop)
+            asyncio.run_coroutine_threadsafe(self.save_data(),bot.loop)
         except Exception as exc:
             pass
 
 
     def add_TEXT(self, message):
-        txt = message.text
-        self.bot.send_message(message.chat.id, txt)
+        self.cursor = conn.cursor()
+        self.cursor.execute("INSERT INTO Events VALUES ('{}', 'fwef', 'fwedg')".format(message.text))
+        self.save_data()
+
+    def clear_data_inline(self, message):
+        sql = "SELECT name FROM Events"
+        self.cursor.execute(sql)
+        data = self.cursor.fetchall()  # or use fetchone()
+        listOfNames = list()
+        for row in data:
+            for name in row:
+                listOfNames.append(name)
+        keyboard = util.generate_inline_keyboard_1d_array(2, 'clear', listOfNames)
+        self.bot.send_message(message.chat.id,'Виберіть що удалити:',reply_markup=keyboard)
+
+    def delete_some_event(self, q):
+        self.bot.send_message(q.message.chat.id, "123")
+        self.cursor.execute("DELETE FROM Events WHERE rowid = ?", q.data[6]);
+        self.save_data()
+
+
