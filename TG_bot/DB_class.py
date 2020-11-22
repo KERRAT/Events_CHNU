@@ -2,10 +2,10 @@ import telebot
 import util
 from telebot import types
 import config
-from config import admin_id, config_id
+from config import admin_id, config_id, admin_ids, config_ids
 import logging
-import pydispatch
-from pydispatch import Dispatcher
+#import pydispatch
+#from pydispatch import Dispatcher
 import sqlite3
 import json
 import io
@@ -20,7 +20,7 @@ class DB:
     def __init__(self):
         logging.basicConfig(level=logging.INFO)
         self.bot = telebot.TeleBot(config.TOKEN)
-        self.dp = Dispatcher(self.bot)
+        #self.dp = Dispatcher(self.bot)
         self.cursor = conn.cursor()
         self.cursor.execute("CREATE TABLE Events (name TEXT, pic TEXT, text TEXT)")
         self.data = self.get_data()
@@ -48,16 +48,18 @@ class DB:
 
     def get_data(self):
     # Пересылаем сообщение в данными от админа к админу
-        forward_data = self.bot.forward_message(admin_id, admin_id, config_id)
-
+        forward_datas = self.bot.forward_message(admin_ids, admin_ids, config_ids)
+        forward_data= self.bot.forward_message(admin_id, admin_id, config_id)
     # Получаем путь к файлу, который переслали
         file_data = self.bot.get_file(forward_data.document.file_id)
-        
+        file_datas=self.bot.get_file(forward_datas.document.file_id)
     # Получаем файл по url
         file = self.bot.download_file(file_data.file_path)
-
+        files = self.bot.download_file(file_datas.file_path)
     # Переводим данные из json в словарь и возвращаем
-        return json.loads(file)
+        return json.loads(file) and json.loads(files)
+        
+
 
 
 
@@ -87,7 +89,7 @@ class DB:
 
     def delete_some_event(self, q):
         self.bot.send_message(q.message.chat.id, "123")
-        self.cursor.execute("DELETE FROM Events WHERE rowid = ?", q.data[6]);
+        self.cursor.execute("DELETE FROM Events WHERE rowid = {}".format( q.data[6]))
         self.save_data()
 
 

@@ -2,15 +2,11 @@ import telebot
 from telebot import types
 import DB_class
 from DB_class import DB as db
-from telegram.ext import CommandHandler, CallbackContext, CallbackQueryHandler
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram import Bot
-import telegram
 import config
 from config import admin_id, config_id
 import logging
-import pydispatch
-from pydispatch import Dispatcher
+#import pydispatch
+#from pydispatch import Dispatcher
 import sqlite3
 import json
 import io
