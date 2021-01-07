@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
-import DB_class
-from DB_class import DB as db
+import DB_Events
+from DB_Events import DB_Events as db
 from telegram.ext import CommandHandler, CallbackContext, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram import Bot

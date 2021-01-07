@@ -5,7 +5,6 @@ import config
 from config import admin_id, config_id
 import logging
 import pydispatch
-from pydispatch import Dispatcher
 import sqlite3
 import json
 import io
@@ -16,21 +15,16 @@ import threading
 conn = sqlite3.connect(":memory:", check_same_thread = False)  # настройки in memory бд
 
 
-class DB:
+class DB_Events:
     def __init__(self):
+        self.name = ""
         logging.basicConfig(level=logging.INFO)
         self.bot = telebot.TeleBot(config.TOKEN)
-        self.dp = Dispatcher(self.bot)
         self.cursor = conn.cursor()
         self.cursor.execute("CREATE TABLE Events (name TEXT, pic TEXT, text TEXT)")
         self.data = self.get_data()
         for row in self.data:
             self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", row)
-
-
-        
-    def DB_connect(self):
-        print("1234")
 
 
     def save_data(self):
@@ -61,7 +55,7 @@ class DB:
         return json.loads(file)
 
 
-
+    """ Таймер
     def timer_start(self):
         threading.Timer(30.0, self.timer_start).start()
         try:
@@ -70,10 +64,10 @@ class DB:
             pass
 
 
-    def add_TEXT(self, message):
-        self.cursor = conn.cursor()
-        self.cursor.execute("INSERT INTO Events VALUES ('{}', 'fwef', 'fwedg')".format(message.text))
-        self.save_data()
+    def add_name(self, name):
+        print(name.text)
+
+    """
 
     def clear_data_inline(self, message):
         sql = "SELECT name FROM Events"

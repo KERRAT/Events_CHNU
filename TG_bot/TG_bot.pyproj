@@ -21,7 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DB_class.py">
+    <Compile Include="DB_Guids.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DB_Events.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="config.py">

@@ -3,8 +3,10 @@ import util
 from telebot import types
 import config
 from config import adminlst, password, admin_id, config_id
-from DB_class import DB as db
+from DB_Events import DB_Events as db
 import sqlite3
+import asyncio
+
 
 
 
@@ -13,8 +15,8 @@ bot = telebot.TeleBot(config.TOKEN)
 
 DB = db()
 
-DB.timer_start()
-DB.DB_connect()
+# DB.timer_start() Таймер вызов
+
 
 @bot.message_handler(commands = ['start'])
 def start(message):
@@ -52,7 +54,6 @@ def team_user_login(message):
     if message.text == password:
         adminlst.append(message.chat.id)
         bot.reply_to(message, "accepted")
-       
     else:
         bot.reply_to(message, "Wrong secrete phrase, try again")
         global attemps
@@ -61,7 +62,15 @@ def team_user_login(message):
 @bot.message_handler(commands=['addevent'])
 def AddEvent(message):
     sent = bot.send_message(message.chat.id, 'Please describe your problem.')
-    bot.register_next_step_handler(sent, DB.add_TEXT)
+    bot.register_next_step_handler(sent, DB.add_name)
+
+    sent = bot.send_message(message.chat.id, 'Please describe your')
+    bot.register_next_step_handler(sent, DB.add_name)
+    sent = bot.send_message(message.chat.id, 'Please describe')
+    bot.register_next_step_handler(sent, DB.add_name)
+    sent = bot.send_message(message.chat.id, 'Please')
+    bot.register_next_step_handler(sent, DB.add_name)
+
 
 
 @bot.message_handler(commands=['clear_ALL_events'])
