@@ -4,7 +4,6 @@ from telebot import types
 import config
 from config import admin_id, config_id
 import logging
-import pydispatch
 import sqlite3
 import json
 import io

@@ -4,7 +4,6 @@ from telebot import types
 import config
 from config import admin_id, config_id
 import logging
-import pydispatch
 import sqlite3
 import json
 import io
@@ -63,11 +62,11 @@ class DB_Events:
         except Exception as exc:
             pass
 
-
+"""
     def add_name(self, name):
         print(name.text)
 
-    """
+    
 
     def clear_data_inline(self, message):
         sql = "SELECT name FROM Events"
