@@ -59,9 +59,12 @@ def reg_date(message):
     date_events=message.text
     inf.append(date_events)
     print(inf)
+    inf.clear()
 
 
-print(inf)
+
+
+
 
 
 
