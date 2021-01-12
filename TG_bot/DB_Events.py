@@ -20,11 +20,10 @@ class DB_Events:
         logging.basicConfig(level=logging.INFO)
         self.bot = telebot.TeleBot(config.TOKEN)
         self.cursor = conn.cursor()
-        self.cursor.execute("CREATE TABLE Events (name TEXT, pic TEXT, text TEXT)")
+        self.cursor.execute("CREATE TABLE Events (name TEXT, link TEXT, data TEXT)")
         self.data = self.get_data()
         for row in self.data:
             self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", row)
-
 
     def save_data(self):
         sql = "SELECT * FROM Events"
@@ -66,7 +65,9 @@ class DB_Events:
     def add_name(self, name):
         print(name.text)
 
-    
+    def add_Event(self, inf):
+        self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", inf)
+        save_data()
 
     def clear_data_inline(self, message):
         sql = "SELECT name FROM Events"
@@ -81,7 +82,6 @@ class DB_Events:
 
     def delete_some_event(self, q):
         self.bot.send_message(q.message.chat.id, "123")
-        self.cursor.execute("DELETE FROM Events WHERE rowid = ?", "{}".format(int(q.data[6]) + 1));
+        self.cursor.execute("DELETE FROM Events WHERE rowid = ?", "{}".format(ord(q.data[6])));
         self.save_data()
-
 

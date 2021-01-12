@@ -58,7 +58,7 @@ def date (message):
 def reg_date(message):
     date_events=message.text
     inf.append(date_events)
-    print(inf)
+    DB.add_Event(inf)
     inf.clear()
 
 
@@ -87,7 +87,7 @@ def addEvent(message):
 @bot.message_handler(content_types=["text"])
 def event_button(message):
     if(message.text == 'Events'):
-        bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_1d_array(1, 'ivent', ('123')))
+        bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_1d_array(1, 'ivent', (("Добрий день"), ("Зустріч"))))
     if(message.text == 'Guides'):
         bot.send_message(message.chat.id, '4321')
        
