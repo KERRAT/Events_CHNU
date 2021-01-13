@@ -24,6 +24,7 @@ class DB_Events:
         self.data = self.get_data()
         for row in self.data:
             self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", row)
+    
 
     def save_data(self):
         sql = "SELECT * FROM Events"
@@ -62,12 +63,13 @@ class DB_Events:
             pass
 
 """
+
     def add_name(self, name):
         print(name.text)
-
+    
     def add_Event(self, inf):
         self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", inf)
-        save_data()
+        self.save_data()
 
     def clear_data_inline(self, message):
         sql = "SELECT name FROM Events"

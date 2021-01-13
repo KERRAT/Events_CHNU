@@ -6,8 +6,8 @@ from config import adminlst, password, admin_id, config_id
 from DB_Events import DB_Events as db
 import sqlite3
 import asyncio
-import datetime
-
+from datetime import datetime
+import julian
 
 
 
@@ -36,6 +36,8 @@ What would you like to do?''').format(me.first_name)
     keyboard = util.generate_keyboard('Events', 'Guides')
     bot.send_message(message.chat.id,msg,reply_markup=keyboard)
 
+
+
 @bot.message_handler(commands=['addevent'])
 def AddEvent(message):
     if message.chat.id not in adminlst:
@@ -43,8 +45,7 @@ def AddEvent(message):
                
     else:
         sent=bot.send_message(message.chat.id,'Введіть назву івенту')
-        bot.register_next_step_handler(sent,link)
-        
+        bot.register_next_step_handler(sent,link)       
 def link (message):
     name_events=message.text
     inf.append(name_events)
@@ -53,14 +54,24 @@ def link (message):
 def date (message):
     link_events=message.text
     inf.append(link_events)
-    sent=bot.send_message(message.chat.id,'Введіть дату івенту в форматі')
+    sent=bot.send_message(message.chat.id,'Введіть дату івенту в форматі "місяць/день/рік часи:хвилини:секунди" наприклад 09/19/18 13:55:26 ')
     bot.register_next_step_handler(sent,reg_date)
 def reg_date(message):
-    date_events=message.text
-    inf.append(date_events)
-    DB.add_Event(inf)
-    inf.clear()
-
+    date_events=str(message.text)
+    try:
+        datetime_object = datetime.strptime(date_events, '%m/%d/%y %H:%M:%S')#преварщаем строку которую ввел пользователь в формат datetime
+        jd =julian.to_jd(  datetime_object,fmt='jd')#из даты в формате datetime конвертируем в григорианськую дату
+        inf.append(jd)
+        sen=bot.send_message(message.chat.id,'Зберегти івент. Напишіть так/ні') 
+        bot.register_next_step_handler(sen,save_events)
+    except:
+        bot.send_message(message.chat.id,'Ви ввели некоректну дату , подивіться будь ласка приклад')
+def save_events(message): # функция в которм админ выбирает добавить елемнт в базу данных 
+    if message.text == 'так':
+        DB.add_Event(inf)
+        inf.clear()#очищаем список для повторного использования в будущем 
+    else:
+        inf.clear()
 
 
 
@@ -72,11 +83,15 @@ def reg_date(message):
 
 @bot.message_handler(commands=['clear_ALL_events'])
 def addEvent(message):
-    DB.clear_data_inline(message)
-    @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("clear", 0, 10))
-    def process_callback(query):
-        print(query.data)
-        DB.delete_some_event(query)
+    if message.chat.id in adminlst:
+
+        DB.clear_data_inline(message)
+        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("clear", 0, 10))
+        def process_callback(query):
+            print(query.data)
+            DB.delete_some_event(query)
+    else:
+        bot.send_message(message.chat.id,'Ця функція доступна тільки для адмінів')
 
 
 
