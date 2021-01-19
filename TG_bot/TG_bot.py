@@ -73,13 +73,7 @@ def save_events(message): # функция в которм админ выбир
     else:
         inf.clear()
 
-
-
-
-
-
-
-
+        
 
 @bot.message_handler(commands=['clear_ALL_events'])
 def addEvent(message):
@@ -89,20 +83,20 @@ def addEvent(message):
         @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("clear", 0, 10))
         def process_callback(query):
             print(query.data)
-            DB.delete_some_event(query)
+            DB.delete_some_event(query, message)
     else:
         bot.send_message(message.chat.id,'Ця функція доступна тільки для адмінів')
-
-
-
-
 
 
 
 @bot.message_handler(content_types=["text"])
 def event_button(message):
     if(message.text == 'Events'):
-        bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_1d_array(1, 'ivent', (("Добрий день"), ("Зустріч"))))
+        names = DB.ev_names()
+        bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_2d_array(1, 'event', names)) #створення інлайн клавіатури
+        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("event", 0, 10)) #прийом колбеку при натисканні на клавіатуру
+        def process_callback(query):
+            DB.send_Ev(names[ord(query.data[6])-1][0], message) #перехід до функції відправки повідомлень
     if(message.text == 'Guides'):
         bot.send_message(message.chat.id, '4321')
        

@@ -10,22 +10,24 @@ import io
 import pkgutil
 import asyncio
 import threading
+import julian
 
 conn = sqlite3.connect(":memory:", check_same_thread = False)  # настройки in memory бд
 
-
+#создание класса базы данных
 class DB_Events:
     def __init__(self):
         self.name = ""
         logging.basicConfig(level=logging.INFO)
         self.bot = telebot.TeleBot(config.TOKEN)
         self.cursor = conn.cursor()
-        self.cursor.execute("CREATE TABLE Events (name TEXT, link TEXT, data TEXT)")
+        self.cursor.execute("CREATE TABLE Events (name TEXT, link TEXT, date INT)")
         self.data = self.get_data()
         for row in self.data:
             self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", row)
     
 
+#сохранение данных в файле базы данных
     def save_data(self):
         sql = "SELECT * FROM Events"
         self.cursor.execute(sql)
@@ -40,6 +42,7 @@ class DB_Events:
         except Exception as ex:
             print(ex)
 
+#получение данных с файла базы данных
     def get_data(self):
     # Пересылаем сообщение в данными от админа к админу
         forward_data = self.bot.forward_message(admin_id, admin_id, config_id)
@@ -64,14 +67,21 @@ class DB_Events:
 
 """
 
+
+#получение списка ивентов
+    def ev_names(self):
+        self.cursor.execute("SELECT name FROM Events WHERE Events.date > julianday('now') ORDER BY date") 
+        return self.cursor.fetchall()
     def add_name(self, name):
         print(name.text)
-    
+
+#введення данних в базу
     def add_Event(self, inf):
         self.cursor.execute("INSERT INTO Events VALUES (?,?,?)", inf)
         self.save_data()
 
-    def clear_data_inline(self, message):
+# очищення данних з бази
+    def clear_data_inline(self, message): 
         sql = "SELECT name FROM Events"
         self.cursor.execute(sql)
         data = self.cursor.fetchall()  # or use fetchone()
@@ -82,8 +92,21 @@ class DB_Events:
         keyboard = util.generate_inline_keyboard_1d_array(2, 'clear', listOfNames)
         self.bot.send_message(message.chat.id,'Виберіть що удалити:',reply_markup=keyboard)
 
-    def delete_some_event(self, q):
-        self.bot.send_message(q.message.chat.id, "123")
+
+#отправка сообщения с ивентом
+    def send_Ev(self, name, message):
+        self.cursor.execute("SELECT name, link, date FROM Events WHERE name = ?", [name]) #получение данных с базы данных
+        data = self.cursor.fetchall()
+        str = "{}".format(julian.from_jd(data[0][2]))
+        msg = ('''{0}
+
+Посилання на івент: {1}
+Дата проведення: {2}''').format(data[0][0], data[0][1], str[:16])
+        self.bot.send_message(message.chat.id,msg) #отправка сообщения с ивентом
+
+        
+#удаление ивентов
+    def delete_some_event(self, q, mess):
         self.cursor.execute("DELETE FROM Events WHERE rowid = ?", "{}".format(ord(q.data[6])));
         self.save_data()
-
+        self.bot.send_message(mess.chat.id,"Видалено!")
