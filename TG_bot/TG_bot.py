@@ -44,6 +44,7 @@ def AddEvent(message):
         bot.send_message(message.chat.id,'Ця функція доступна тільки для адмінів')
                
     else:
+        inf.clear()
         sent=bot.send_message(message.chat.id,'Введіть назву івенту')
         bot.register_next_step_handler(sent,link)       
 def link (message):
@@ -93,10 +94,13 @@ def addEvent(message):
 def event_button(message):
     if(message.text == 'Events'):
         names = DB.ev_names()
+        print(names)
         bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_2d_array(1, 'event', names)) #створення інлайн клавіатури
         @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("event", 0, 10)) #прийом колбеку при натисканні на клавіатуру
         def process_callback(query):
-            DB.send_Ev(names[ord(query.data[6])-1][0], message) #перехід до функції відправки повідомлень
+            names = DB.ev_names()
+            print(names)
+            DB.send_Ev(names[ord(query.data[6])-1][0], message) #перехід до функції відправки повідомленя
     if(message.text == 'Guides'):
         bot.send_message(message.chat.id, '4321')
        

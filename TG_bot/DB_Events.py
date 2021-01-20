@@ -72,8 +72,7 @@ class DB_Events:
     def ev_names(self):
         self.cursor.execute("SELECT name FROM Events WHERE Events.date > julianday('now') ORDER BY date") 
         return self.cursor.fetchall()
-    def add_name(self, name):
-        print(name.text)
+
 
 #введення данних в базу
     def add_Event(self, inf):
@@ -94,7 +93,7 @@ class DB_Events:
 
 
 #отправка сообщения с ивентом
-    def send_Ev(self, name, message):
+    def send_Ev(self, name, mess):
         self.cursor.execute("SELECT name, link, date FROM Events WHERE name = ?", [name]) #получение данных с базы данных
         data = self.cursor.fetchall()
         str = "{}".format(julian.from_jd(data[0][2]))
@@ -102,7 +101,7 @@ class DB_Events:
 
 Посилання на івент: {1}
 Дата проведення: {2}''').format(data[0][0], data[0][1], str[:16])
-        self.bot.send_message(message.chat.id,msg) #отправка сообщения с ивентом
+        self.bot.send_message(mess.chat.id,msg) #отправка сообщения с ивентом
 
         
 #удаление ивентов
