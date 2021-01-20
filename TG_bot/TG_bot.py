@@ -26,13 +26,25 @@ def start(message):
     """
        Shows an welcome message and help info about the available commands.
     """
-        
+     
     
 
     me = bot.get_me()
     msg = ('''Hello!
 I'm {0} and I came here to help you.
 What would you like to do?''').format(me.first_name)
+    
+    with open('id.txt') as f:
+        global fd
+        fd=f.readlines()
+    with open('id.txt','a') as f:
+        if str(message.chat.id)+'\n' not in fd:
+            f.write(str(message.chat.id)+'\n' )        
+
+
+    
+    
+
     keyboard = util.generate_keyboard('Events')
     bot.send_message(message.chat.id,msg,reply_markup=keyboard)
 
@@ -70,9 +82,23 @@ def reg_date(message):
 def save_events(message): # функция в которм админ выбирает добавить елемнт в базу данных 
     if message.text == 'так':
         DB.add_Event(inf)
+        bot.send_message(message.chat.id,'Івент збережено')
+        dt = julian.from_jd(inf[2], fmt='jd')
+        with open('id.txt') as f:
+            fd=f.readlines()
+        for i in fd:
+            if int(i) in adminlst:
+                continue 
+            bot.send_message(int(i),'''Добавлено новий івент!!!
+{}
+Посилання на івент:{}
+Дата проведення:{}
+'''.format(inf[0],inf[1],str(dt)[:16]))
         inf.clear()#очищаем список для повторного использования в будущем 
     else:
         inf.clear()
+
+
 
         
 

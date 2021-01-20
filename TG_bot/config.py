@@ -5,6 +5,9 @@ adminlst=(741475126,430143683)
 password='370920'
 admin_id = '430143683'
 config_id = '1000'
-import datetime    
-x = datetime.datetime(2020, 5, 17)    
-print(type(x))
+
+
+
+
+
+
