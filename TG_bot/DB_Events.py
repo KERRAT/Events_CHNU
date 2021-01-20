@@ -93,7 +93,7 @@ class DB_Events:
 
 
 #отправка сообщения с ивентом
-    def send_Ev(self, name, mess):
+    def send_Ev(self, name, id):
         self.cursor.execute("SELECT name, link, date FROM Events WHERE name = ?", [name]) #получение данных с базы данных
         data = self.cursor.fetchall()
         str = "{}".format(julian.from_jd(data[0][2]))
@@ -101,7 +101,7 @@ class DB_Events:
 
 Посилання на івент: {1}
 Дата проведення: {2}''').format(data[0][0], data[0][1], str[:16])
-        self.bot.send_message(mess.chat.id,msg) #отправка сообщения с ивентом
+        self.bot.send_message(id,msg) #отправка сообщения с ивентом
 
         
 #удаление ивентов

@@ -33,7 +33,7 @@ def start(message):
     msg = ('''Hello!
 I'm {0} and I came here to help you.
 What would you like to do?''').format(me.first_name)
-    keyboard = util.generate_keyboard('Events', 'Guides')
+    keyboard = util.generate_keyboard('Events')
     bot.send_message(message.chat.id,msg,reply_markup=keyboard)
 
 
@@ -76,7 +76,7 @@ def save_events(message): # функция в которм админ выбир
 
         
 
-@bot.message_handler(commands=['clear_ALL_events'])
+@bot.message_handler(commands=['del_event'])
 def addEvent(message):
     if message.chat.id in adminlst:
 
@@ -94,13 +94,12 @@ def addEvent(message):
 def event_button(message):
     if(message.text == 'Events'):
         names = DB.ev_names()
-        print(names)
+        print(message.chat.id)
         bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_2d_array(1, 'event', names)) #створення інлайн клавіатури
         @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("event", 0, 10)) #прийом колбеку при натисканні на клавіатуру
         def process_callback(query):
             names = DB.ev_names()
-            print(names)
-            DB.send_Ev(names[ord(query.data[6])-1][0], message) #перехід до функції відправки повідомленя
+            DB.send_Ev(names[ord(query.data[6])-1][0], query.from_user.id) #перехід до функції відправки повідомленя
     if(message.text == 'Guides'):
         bot.send_message(message.chat.id, '4321')
        
