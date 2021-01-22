@@ -83,7 +83,7 @@ def save_events(message): # функция в которм админ выбир
     if message.text == 'так':
         DB.add_Event(inf)
         bot.send_message(message.chat.id,'Івент збережено')
-        dt = julian.from_jd(inf[2], fmt='jd')
+        """dt = julian.from_jd(inf[2], fmt='jd')
         with open('id.txt') as f:
             fd=f.readlines()
         for i in fd:
@@ -93,7 +93,7 @@ def save_events(message): # функция в которм админ выбир
 {}
 Посилання на івент:{}
 Дата проведення:{}
-'''.format(inf[0],inf[1],str(dt)[:16]))
+'''.format(inf[0],inf[1],str(dt)[:16]))"""
         inf.clear()#очищаем список для повторного использования в будущем 
     else:
         inf.clear()
@@ -113,6 +113,15 @@ def addEvent(message):
             DB.delete_some_event(query, message)
     else:
         bot.send_message(message.chat.id,'Ця функція доступна тільки для адмінів')
+
+@bot.message_handler(commands=['old_ev'])
+def addEvent(message):
+    names = DB.old_ev_names()
+    bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_2d_array(1, 'oldEv', names)) #створення інлайн клавіатури
+    @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("oldEv", 0, 10)) #прийом колбеку при натисканні на клавіатуру
+    def process_callback(query):
+        names = DB.old_ev_names()
+        DB.send_Ev(names[ord(query.data[6])-1][0], query.from_user.id) #перехід до функції відправки повідомленя
 
 
 

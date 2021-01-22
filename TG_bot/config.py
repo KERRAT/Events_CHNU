@@ -5,9 +5,3 @@ adminlst=(741475126,430143683)
 password='370920'
 admin_id = '430143683'
 config_id = '1000'
-
-
-
-
-
-

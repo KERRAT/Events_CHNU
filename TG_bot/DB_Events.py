@@ -73,6 +73,9 @@ class DB_Events:
         self.cursor.execute("SELECT name FROM Events WHERE Events.date > julianday('now') ORDER BY date") 
         return self.cursor.fetchall()
 
+    def old_ev_names(self):
+        self.cursor.execute("SELECT name FROM Events WHERE Events.date < julianday('now') ORDER BY date DESC") 
+        return self.cursor.fetchall()
 
 #введення данних в базу
     def add_Event(self, inf):
