@@ -8,7 +8,6 @@ import sqlite3
 import json
 import io
 import pkgutil
-import asyncio
 import threading
 import julian
 

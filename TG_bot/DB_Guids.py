@@ -8,7 +8,6 @@ import sqlite3
 import json
 import io
 import pkgutil
-import asyncio
 import threading
 
 conn = sqlite3.connect(":memory:", check_same_thread = False)  # настройки in memory бд

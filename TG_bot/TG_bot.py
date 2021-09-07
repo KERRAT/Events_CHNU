@@ -5,7 +5,6 @@ import config
 from config import adminlst, password, admin_id, config_id
 from DB_Events import DB_Events as db
 import sqlite3
-import asyncio
 from datetime import datetime
 import julian
 
