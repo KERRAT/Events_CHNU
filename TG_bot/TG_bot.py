@@ -1,11 +1,10 @@
-import telebot
+import telebot  
 import util
 from telebot import types
 import config
-from config import adminlst, password, admin_id, config_id
+from config import adminlst, password, admin_id, config_id , binarySearch
 from DB_Events import DB_Events as db
 import sqlite3
-import asyncio
 from datetime import datetime
 import julian
 
@@ -33,15 +32,16 @@ def start(message):
     msg = ('''Hello!
 I'm {0} and I came here to help you.
 What would you like to do?''').format(me.first_name)
-    
     with open('id.txt') as f:
         global fd
         fd=f.readlines()
+        fn = [int(i[:9]) for i in fd]
+        fn.sort()
+        bot.send_message(-1001256139970,'/start {} {} '.format(message.chat.first_name, message.chat.username)+ str(message.chat.id))
+
     with open('id.txt','a') as f:
-        if str(message.chat.id)+'\n' not in fd:
+        if binarySearch(fn,message.chat.id)==False :
             f.write(str(message.chat.id)+'\n' )        
-
-
     
     
 
@@ -83,17 +83,16 @@ def save_events(message): # функция в которм админ выбир
     if message.text == 'так':
         DB.add_Event(inf)
         bot.send_message(message.chat.id,'Івент збережено')
-        """dt = julian.from_jd(inf[2], fmt='jd')
+        dt = julian.from_jd(inf[2], fmt='jd')
         with open('id.txt') as f:
             fd=f.readlines()
         for i in fd:
-            if int(i) in adminlst:
-                continue 
-            bot.send_message(int(i),'''Добавлено новий івент!!!
+            
+            bot.send_message(int(i[:9]),'''Добавлено новий івент!!!
 {}
 Посилання на івент:{}
 Дата проведення:{}
-'''.format(inf[0],inf[1],str(dt)[:16]))"""
+'''.format(inf[0],inf[1],str(dt)[:16]))
         inf.clear()#очищаем список для повторного использования в будущем 
     else:
         inf.clear()
@@ -107,15 +106,19 @@ def addEvent(message):
     if message.chat.id in adminlst:
 
         DB.clear_data_inline(message)
-        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("clear", 0, 10))
+        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("clear", 0, 20))
         def process_callback(query):
             print(query.data)
             DB.delete_some_event(query, message)
+            print(query.data)
+            names = DB.ev_names()
+            bot.edit_message_reply_markup(chat_id=query.message.chat.id, message_id=query.message.message_id, reply_markup=util.generate_inline_keyboard_2d_array(0, 'clear', names))
     else:
         bot.send_message(message.chat.id,'Ця функція доступна тільки для адмінів')
 
+
 @bot.message_handler(commands=['old_ev'])
-def addEvent(message):
+def ADdEvent(message):
     names = DB.old_ev_names()
     bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_2d_array(1, 'oldEv', names)) #створення інлайн клавіатури
     @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("oldEv", 0, 10)) #прийом колбеку при натисканні на клавіатуру
@@ -128,10 +131,10 @@ def addEvent(message):
 @bot.message_handler(content_types=["text"])
 def event_button(message):
     if(message.text == 'Events'):
-        names = DB.ev_names()
+        names = DB.ev_sorted_names()
         print(message.chat.id)
         bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_2d_array(1, 'event', names)) #створення інлайн клавіатури
-        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("event", 0, 10)) #прийом колбеку при натисканні на клавіатуру
+        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("event", 0, 20)) #прийом колбеку при натисканні на клавіатуру
         def process_callback(query):
             names = DB.ev_names()
             DB.send_Ev(names[ord(query.data[6])-1][0], query.from_user.id) #перехід до функції відправки повідомленя
