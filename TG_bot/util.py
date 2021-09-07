@@ -9,6 +9,7 @@ import sqlite3
 import json
 import io
 import pkgutil
+import asyncio
 import threading
 
 bot = telebot.TeleBot(config.TOKEN)
@@ -40,8 +41,7 @@ def generate_inline_keyboard_1d_array (width, name, *answer):
     return inline_keyboard
 
 def generate_inline_keyboard_2d_array (width, name, *answer):
-    inline_keyboard = types.InlineKeyboardMarkup()
-    
+    inline_keyboard = types.InlineKeyboardMarkup(row_width= width)
     i=1
     for arr_2d in answer:
         for arr_1d in arr_2d:
@@ -49,11 +49,6 @@ def generate_inline_keyboard_2d_array (width, name, *answer):
                 InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(name, chr(i)))
                 inline_keyboard.add(InlineButtonMainMenu)
                 i = i + 1
-           # if(i % 10 == 0):
-           #    inline_keyboard.add(
-           #         types.InlineKeyboardButton('<--', callback_data="{}_left".format(name)),
-           #         types.InlineKeyboardButton('-->', callback_data="{}_right".format(name))
-           #         ) 
     return inline_keyboard
 
 

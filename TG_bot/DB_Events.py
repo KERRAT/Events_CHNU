@@ -8,6 +8,7 @@ import sqlite3
 import json
 import io
 import pkgutil
+import asyncio
 import threading
 import julian
 
@@ -69,9 +70,6 @@ class DB_Events:
 
 #получение списка ивентов
     def ev_names(self):
-        self.cursor.execute("SELECT name FROM Events") 
-        return self.cursor.fetchall()
-    def ev_sorted_names(self):
         self.cursor.execute("SELECT name FROM Events WHERE Events.date > julianday('now') ORDER BY date") 
         return self.cursor.fetchall()
 
@@ -93,7 +91,7 @@ class DB_Events:
         for row in data:
             for name in row:
                 listOfNames.append(name)
-        keyboard = util.generate_inline_keyboard_1d_array(1, 'clear', listOfNames)
+        keyboard = util.generate_inline_keyboard_1d_array(2, 'clear', listOfNames)
         self.bot.send_message(message.chat.id,'Виберіть що удалити:',reply_markup=keyboard)
 
 
@@ -113,3 +111,4 @@ class DB_Events:
     def delete_some_event(self, q, mess):
         self.cursor.execute("DELETE FROM Events WHERE rowid = ?", "{}".format(ord(q.data[6])));
         self.save_data()
+        self.bot.send_message(mess.chat.id,"Видалено!")
