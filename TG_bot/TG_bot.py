@@ -106,10 +106,11 @@ def addEvent(message):
     if message.chat.id in adminlst:
 
         DB.clear_data_inline(message)
-        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("clear", 0, 10))
+        @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("clear", 1, 20))
         def process_callback(query):
-            print(query.data)
             DB.delete_some_event(query, message)
+            names = DB.ev_names();
+            bot.edit_message_reply_markup(chat_id=query.message.chat.id, message_id=query.message.message_id, reply_markup=util.generate_inline_keyboard_2d_array(1, 'clear', names))
     else:
         bot.send_message(message.chat.id,'Ця функція доступна тільки для адмінів')
 
@@ -127,7 +128,7 @@ def addEvent(message):
 @bot.message_handler(content_types=["text"])
 def event_button(message):
     if(message.text == 'Events'):
-        names = DB.ev_names()
+        names = DB.ev_names_sorted()
         print(message.chat.id)
         bot.send_message(chat_id=message.chat.id,text="Виберіть івент", reply_markup=util.generate_inline_keyboard_2d_array(1, 'event', names)) #створення інлайн клавіатури
         @bot.callback_query_handler(lambda query: query.data in util.get_names_arr("event", 0, 10)) #прийом колбеку при натисканні на клавіатуру
