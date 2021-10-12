@@ -24,7 +24,7 @@ def generate_inline_keyboard (width, name, *answer):
     inline_keyboard = types.InlineKeyboardMarkup(row_width= width)
     i=1
     for text in answer:
-         InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(name, chr(i)))
+         InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(i, name))
          inline_keyboard.add(InlineButtonMainMenu)
          i = i + 1
     return inline_keyboard
@@ -34,7 +34,7 @@ def generate_inline_keyboard_1d_array (width, name, *answer):
     i=1
     for arr_1d in answer:
         for text in arr_1d:
-            InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(name, chr(i)))
+            InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(i, name))
             inline_keyboard.add(InlineButtonMainMenu)
             i = i + 1
     return inline_keyboard
@@ -45,7 +45,7 @@ def generate_inline_keyboard_2d_array (width, name, *answer):
     for arr_2d in answer:
         for arr_1d in arr_2d:
             for text in arr_1d:
-                InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(name, chr(i)))
+                InlineButtonMainMenu = types.InlineKeyboardButton(text = text, callback_data = "{}_{}".format(i, name))
                 inline_keyboard.add(InlineButtonMainMenu)
                 i = i + 1
     return inline_keyboard
@@ -54,5 +54,5 @@ def generate_inline_keyboard_2d_array (width, name, *answer):
 def get_names_arr(name, beg, end):
     l = list()
     for x in range(beg,end):
-        l.append("{}_{}".format(name, chr(x)))
+        l.append("{}_{}".format(x, name))
     return l

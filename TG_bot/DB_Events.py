@@ -1,3 +1,5 @@
+from regex import regex
+
 import telebot
 import util
 from telebot import types
@@ -72,6 +74,10 @@ class DB_Events:
         self.cursor.execute("SELECT name FROM Events") 
         return self.cursor.fetchall()
 
+    def ev_id(self):
+        self.cursor.execute("SELECT rowid FROM Events")
+        return self.cursor.fetchall()
+
     def ev_names_sorted(self):
         self.cursor.execute("SELECT name FROM Events WHERE Events.date > julianday('now') ORDER BY date") 
         return self.cursor.fetchall()
@@ -90,11 +96,13 @@ class DB_Events:
         sql = "SELECT name FROM Events"
         self.cursor.execute(sql)
         data = self.cursor.fetchall()  # or use fetchone()
-        listOfNames = list()
+        keyboard = types.InlineKeyboardMarkup(row_width= 2)
+        i = 0
         for row in data:
             for name in row:
-                listOfNames.append(name)
-        keyboard = util.generate_inline_keyboard_1d_array(2, 'clear', listOfNames)
+                InlineButtonMainMenu = types.InlineKeyboardButton(text=name, callback_data="{}_{}".format(i, "clear"))
+                keyboard.add(InlineButtonMainMenu)
+                i = i + 1
         self.bot.send_message(message.chat.id,'Виберіть що удалити:',reply_markup=keyboard)
 
 
@@ -112,5 +120,6 @@ class DB_Events:
         
 #удаление ивентов
     def delete_some_event(self, q, mess):
-        self.cursor.execute("DELETE FROM Events WHERE rowid = ?", "{}".format(ord(q.data[6])));
+        num = int(regex.match('\d{1,10}', q.data)[0])
+        self.cursor.execute(f"DELETE FROM Events WHERE rowid = {num}")
         self.save_data()
